@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-
+import sys
 import xbmc
+import xbmcaddon
+import os
 
 # Setting up basic Variables for XBMC ####
 __addon__ = xbmcaddon.Addon()
