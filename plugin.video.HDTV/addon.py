@@ -26,21 +26,15 @@ def show_settings():
     selfAddon.openSettings()
 
 
-def set_setting():
-    username = selfAddon.getSetting('USERNAME')
-    password = selfAddon.getSetting('PASSWORD')
-    if (username == '') and (password == ''):
-        xbmc.executebuiltin('Notification(Please Enter Valid Username/Password)')
-        print('Yasir is Setting')
-        show_settings()
-        # LOGIN(username,password)
-
+#### MAIN Starting #####
 
 username = selfAddon.getSetting('USERNAME')
 password = selfAddon.getSetting('PASSWORD')
+if (username == '') and (password == ''):
+    xbmc.executebuiltin('Notification(Please Enter Valid Username/Password,'')')
+    show_settings()
+    username = selfAddon.getSetting('USERNAME')
+    password = selfAddon.getSetting('PASSWORD')
 
-set_setting()
-print ("Yasir")
-print (username)
-# url = 'http://ip.sltv.be:8000/get.php?username='+username+'&password='+password+'&type=m3u&output=ts'
-# xbmc.Player().play(url)
+url = 'http://ip.sltv.be:8000/get.php?username=' + username + '&password=' + password + '&type=m3u&output=ts'
+xbmc.Player().play(url)
