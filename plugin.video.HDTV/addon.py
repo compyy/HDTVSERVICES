@@ -20,12 +20,26 @@ sys.path.append(os.path.join(addonPath, 'resources', 'lib'))
 if not selfAddon.getSetting("dummy") == "true":
     selfAddon.setSetting("dummy", "true")
 
+
 # Define setting function ###
 def show_settings():
     selfAddon.openSettings()
 
+
+def set_setting():
+    username = selfAddon.getSetting('USERNAME')
+    password = selfAddon.getSetting('PASSWORD')
+    if (username == '') & (password == ''):
+        xbmc.executebuiltin("XBMC.Notification('Please Enter Valid Username/Password')")
+        show_settings()
+        # LOGIN(username,password)
+
+
 username = selfAddon.getSetting('USERNAME')
 password = selfAddon.getSetting('PASSWORD')
 
-url = 'http://ip.sltv.be:8000/get.php?username='+username+'&password='+password+'&type=m3u&output=ts'
-xbmc.Player().play(url)
+set_setting()
+print ("Yasir")
+print (username)
+# url = 'http://ip.sltv.be:8000/get.php?username='+username+'&password='+password+'&type=m3u&output=ts'
+# xbmc.Player().play(url)

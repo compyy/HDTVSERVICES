@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
     <category label="32001">
-        <setting label="32010" type="string" id="USERNAME"/>
-		<setting label="32010" type="string" id="PASSWORD"/>
-     </category>
+        <setting label="32011" type="text" id="USERNAME" default=""/>
+        <setting label="32012" type="text" id="PASSWORD" default=""/>
+    </category>
 </settings>
