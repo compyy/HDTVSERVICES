@@ -29,8 +29,9 @@ def show_settings():
 def set_setting():
     username = selfAddon.getSetting('USERNAME')
     password = selfAddon.getSetting('PASSWORD')
-    if (username == '') & (password == ''):
-        xbmc.executebuiltin("XBMC.Notification('Please Enter Valid Username/Password')")
+    if (username == '') and (password == ''):
+        xbmc.executebuiltin('Notification(Please Enter Valid Username/Password)')
+        print('Yasir is Setting')
         show_settings()
         # LOGIN(username,password)
 
