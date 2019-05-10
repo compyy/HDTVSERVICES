@@ -3,6 +3,7 @@
 <addon id="plugin.video.HDTV" name="HDTV" version="0.7B" provider-name="Compyy">
     <requires>
         <import addon="xbmc.python" version="2.7.0"/>
+        <import addon="script.module.requests" version="2.9.1"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="addon.py">
         <provides>video</provides>
