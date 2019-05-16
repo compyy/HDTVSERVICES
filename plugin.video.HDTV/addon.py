@@ -109,7 +109,7 @@ def add_channels(group_name):
                     ch_name = playlist_tracks[i]['tvg-name'].encode("utf-8")
                     ch_url = playlist_tracks[i]['link'].encode("utf-8")
                     ch_icon = playlist_tracks[i]['tvg-logo'].encode("utf-8")
-                    add_directory(ch_name.encode('utf-8'), ch_url, 3, ch_icon, isItFolder=False)
+                    add_directory(ch_name, ch_url, 3, ch_icon, isItFolder=False)
 
     return
 
