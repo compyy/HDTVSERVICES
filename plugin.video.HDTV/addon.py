@@ -70,6 +70,9 @@ def get_params():
 
     return param
 
+def EXIT():
+        xbmc.executebuiltin("XBMC.Container.Update(path,replace)")
+        xbmc.executebuiltin("XBMC.ActivateWindow(Home)")
 
 # Define Addon specific Functions
 def add_directory(name, url, mode, iconimage, isItFolder=True):
@@ -84,8 +87,14 @@ def add_directory(name, url, mode, iconimage, isItFolder=True):
 def add_types():
     add_directory('Refresh Database', 'Refresh_Database', 2, '')
 
-    with open(cacheDir + '/groups.txt') as data_file:
-        group_list = data_file.readlines()
+    try:
+        with open(cacheDir + '/groups.txt') as data_file:
+            group_list = data_file.readlines()
+
+    except:
+        xbmcgui.Dialog().ok('World Wide HD Service', 'Loading Cache..... ',
+                           'Please Wait Untill Cache is updated.')
+        EXIT()
 
     for i in group_list:
         if i:
@@ -122,7 +131,7 @@ def play_url(media_url):
     listitem.setProperty('mimetype', 'video/x-msvideo')
     listitem.setProperty('IsPlayable', 'true')
     playlist.add(media_url, listitem)
-    xbmcgui.Dialog().notification(__addonname__, "Playing  Video", __icon__, 3000, False)
+    xbmcgui.Dialog().notification(__addonname__, "Please Wait: Loading Video", __icon__, 3000, False)
     xbmc.Player().play(playlist)
 
 
