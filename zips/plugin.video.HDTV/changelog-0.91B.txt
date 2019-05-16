@@ -1,0 +1,3 @@
+[B]Version 0.1[/B]
+- First Beta release for addon
+- First commit
