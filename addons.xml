@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.HDTV" name="HDTV" version="0.91B" provider-name="Compyy">
+<addon id="plugin.video.HDTV" name="HDTV" version="0.93B" provider-name="Compyy">
     <requires>
         <import addon="xbmc.python" version="2.7.0"/>
         <import addon="script.module.requests" version="2.9.1"/>
@@ -29,17 +29,10 @@
         <platform>all</platform>
     </extension>
     <extension point="xbmc.addon.repository" name="WoldWide HD TV Services">
-            <dir>
-                <info compressed="false">https://raw.github.com/compyy/HDTVSERVICES/master/addons.xml</info>
-                <checksum>https://raw.github.com/compyy/HDTVSERVICES/master/addons.xml.md5</checksum>
-                <datadir zip="true">https://raw.github.com/compyy/HDTVSERVICES/master/zips</datadir>
-            </dir>
-
-            <info compressed="false">https://raw.github.com/compyy/HDTVSERVICES/master/addons.xml</info>
-            <checksum>https://raw.github.com/compyy/HDTVSERVICES/master/addons.xml.md5</checksum>
-            <datadir zip="true">https://raw.github.com/compyy/HDTVSERVICES/master/zips</datadir>
-
-        </extension>
+        <info compressed="false">https://raw.github.com/compyy/HDTVSERVICES/master/addons.xml</info>
+        <checksum>https://raw.github.com/compyy/HDTVSERVICES/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://raw.github.com/compyy/HDTVSERVICES/master/zips</datadir>
+    </extension>
 </addon>
 
 <addon id="repository.HDTV" name="WoldWide HD TV Services" version="1.4" provider-name="HDTV">
