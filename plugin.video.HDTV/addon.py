@@ -20,11 +20,14 @@ __icon__ = __addon__.getAddonInfo('icon')
 
 addon_id = 'plugin.video.HDTV'
 selfAddon = xbmcaddon.Addon(id=addon_id)
-profile_path = xbmc.translatePath(selfAddon.getAddonInfo('profile'))
+profile_path = xbmc.translatePath(selfAddon.getAddonInfo('profile')).decode("utf-8")
 addonPath = xbmcaddon.Addon().getAddonInfo('path')
 addonversion = xbmcaddon.Addon().getAddonInfo('version')
 sys.path.append(os.path.join(addonPath, 'resources', 'lib'))
-
+service_addon = addonPath + '/service.py'
+cacheDir = os.path.join(profile_path, "cache")
+if not os.path.exists(cacheDir):
+    os.makedirs(cacheDir)
 
 # Initializing the settings ###
 if not selfAddon.getSetting('dummy') == 'true':
@@ -79,37 +82,37 @@ def add_directory(name, url, mode, iconimage, isItFolder=True):
 
 
 def add_types():
-    m3_list = readM3u(addonPath + '\list.m3u')
-    playlist_group = []
+    add_directory('Refresh Database', 'Refresh_Database', 2, '')
 
-    for i in m3_list:
-        if i is None:
-            continue
-        else:
-            playlist_group.append(i['tvg-group'])
+    with open(cacheDir + '/groups.txt') as data_file:
+        group_list = data_file.readlines()
 
-    playlist_group = list(dict.fromkeys(playlist_group))
-    playlist_group.sort()
-    for i in playlist_group:
-        add_directory(i, i, 2, '')
+    for i in group_list:
+        if i:
+            i = i.strip()
+            add_directory(i, i, 2, '')
 
     add_directory('Settings', 'Settings', 99, 'OverlayZIP.png', isItFolder=False)
     return
 
 
 def add_channels(group_name):
-    playlist_tracks = readM3u(addonPath + '\list.m3u')
-    for i in playlist_tracks:
-        if i is None:
-            continue
-        else:
-            ch_group = i['tvg-group']
-            ch_name = i['tvg-name']
-            ch_url = i['link']
-            ch_icon = i['tvg-logo']
-            if ch_group == group_name:
-                add_directory(ch_name.encode('utf-8'), ch_url, 3, ch_icon, isItFolder=False)
+    if group_name == 'Refresh Database':
+        xbmc.executebuiltin('XBMC.RunScript(' + service_addon + ')')
+    else:
+        with open(cacheDir + '/channels.json') as data_file:
+            playlist_tracks = json.loads(data_file.read())
+
+        for i in range(0, len(playlist_tracks)):
+            if playlist_tracks[i]:
+                if playlist_tracks[i]['tvg-group'].encode("utf-8") == group_name:
+                    ch_name = playlist_tracks[i]['tvg-name'].encode("utf-8")
+                    ch_url = playlist_tracks[i]['link'].encode("utf-8")
+                    ch_icon = playlist_tracks[i]['tvg-logo'].encode("utf-8")
+                    add_directory(ch_name.encode('utf-8'), ch_url, 3, ch_icon, isItFolder=False)
+
     return
+
 
 def play_url(media_url):
     playlist = xbmc.PlayList(1)
@@ -121,55 +124,6 @@ def play_url(media_url):
     playlist.add(media_url, listitem)
     xbmcgui.Dialog().notification(__addonname__, "Playing  Video", __icon__, 3000, False)
     xbmc.Player().play(playlist)
-
-def readM3u(m3u_url):
-    m3lines = readAllLines(m3u_url)
-    m3_list = parseFile(m3lines)
-    return m3_list
-
-
-def readAllLines(m3u_url):
-    m3lines = [line.rstrip('\n') for line in open(m3u_url)]
-    return m3lines
-
-
-def parseFile(m3lines):
-    m3_list = []
-    numLine = len(m3lines)
-    for n in range(numLine):
-        line = m3lines[n]
-        if line[0] == "#":
-            m3_list.append(manageLine(m3lines, n))
-
-    return m3_list
-
-
-def manageLine(m3lines, n):
-    lineInfo = m3lines[n]
-    lineLink = m3lines[n + 1]
-    if lineInfo != "#EXTM3U":
-        m = re.search("tvg-name=\"(.*?)\"", lineInfo)
-        name = m.group(1)
-        m = re.search("tvg-ID=\"(.*?)\"", lineInfo)
-        id = m.group(1)
-        m = re.search("tvg-logo=\"(.*?)\"", lineInfo)
-        logo = m.group(1)
-        m = re.search("group-title=\"(.*?)\"", lineInfo)
-        group = m.group(1)
-        m = re.search("[,](?!.*[,])(.*?)$", lineInfo)
-        title = m.group(1)
-        # ~ print(name+"||"+id+"||"+logo+"||"+group+"||"+title)
-
-        test = {
-            "title": title,
-            "tvg-name": name,
-            "tvg-ID": id,
-            "tvg-logo": logo,
-            "tvg-group": group,
-            "titleFile": os.path.basename(lineLink),
-            "link": lineLink
-        }
-        return test
 
 
 # Start of MAIN Code
@@ -199,6 +153,11 @@ params
 args = urlparse.parse_qs(sys.argv[2][1:])
 print
 name, url, mode
+
+with open(profile_path + '/runtime', 'r') as fout:
+    script_time = float(fout.readline())
+    if time.time() > (script_time + 1800):
+        xbmc.executebuiltin('XBMC.RunScript(' + service_addon + ')')
 
 # noinspection PyBroadException
 try:

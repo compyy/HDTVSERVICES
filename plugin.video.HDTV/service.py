@@ -1,11 +1,13 @@
 import base64
 import datetime
 import json
+import os
 import re
+import shutil
 import sys
 import time
-import os
 import urllib
+
 import urllib2
 import xbmc
 import xbmcaddon
@@ -15,10 +17,12 @@ import xbmcgui
 addon_id = 'plugin.video.HDTV'
 selfAddon = xbmcaddon.Addon(id=addon_id)
 addonPath = selfAddon.getAddonInfo("path")
-profile_path = xbmc.translatePath(selfAddon.getAddonInfo('profile'))
+profile_path = xbmc.translatePath(selfAddon.getAddonInfo('profile')).decode("utf-8")
 cacheDir = os.path.join(profile_path, "cache")
 if not os.path.exists(cacheDir):
     os.makedirs(cacheDir)
+
+cachem3u = cacheDir + '/m3u8file'
 
 # Initializing the settings ###
 if not selfAddon.getSetting('dummy') == 'true':
@@ -35,27 +39,49 @@ def show_settings():
 def update_m3u():
     username = selfAddon.getSetting('USERNAME')
     password = selfAddon.getSetting('PASSWORD')
-    url = 'http://ip.sltv.be:8000/get.php?username='+username+'&password='+password+'&type=m3u&output=ts'
-    c = urllib3.PoolManager()
+    url = 'http://ip.sltv.be:8000/get.php?username=' + username + '&password=' + password + '&type=m3u_plus&output=ts'
+    try:
+        urllib.urlretrieve(url, cachem3u)
+    except:
+        xbmcgui.Dialog().ok('World Wide HD Service', 'Cannot Download File',
+                            'Please check if Username/password is correct or contact Support')
+        exit()
 
-    with c.request('GET', url, preload_content=False) as resp, open(filename, 'wb') as out_file:
-        shutil.copyfileobj(resp, out_file)
+    m3_list = readM3u(cachem3u)
+    playlist_group = []
 
-    resp.release_conn()
+    for i in m3_list:
+        if i is None:
+            continue
+        else:
+            playlist_group.append(i['tvg-group'])
+
+    playlist_group = list(dict.fromkeys(playlist_group))
+    playlist_group.sort()
+    with open(cacheDir + '/groups.txt', 'w') as fout:
+        for i in playlist_group:
+            if i:
+                fout.write(i)
+                fout.write('\n')
+
+    with open(cacheDir + '/channels.json', 'w') as fout:
+        json.dump(m3_list, fout)
+
+    return
 
 
-def readM3u(m3u_url):
-    m3lines = readAllLines(m3u_url)
-    m3_list = parseFile(m3lines)
+def readM3u(cachem3u):
+    m3lines = readAllLines(cachem3u)
+    m3_list = parsem3u(m3lines)
     return m3_list
 
 
-def readAllLines(m3u_url):
-    m3lines = [line.rstrip('\n') for line in open(m3u_url)]
+def readAllLines(cachem3u):
+    m3lines = [line.rstrip('\n') for line in open(cachem3u)]
     return m3lines
 
 
-def parseFile(m3lines):
+def parsem3u(m3lines):
     m3_list = []
     numLine = len(m3lines)
     for n in range(numLine):
@@ -82,7 +108,7 @@ def manageLine(m3lines, n):
         title = m.group(1)
         # ~ print(name+"||"+id+"||"+logo+"||"+group+"||"+title)
 
-        test = {
+        m3dict = {
             "title": title,
             "tvg-name": name,
             "tvg-ID": id,
@@ -91,18 +117,18 @@ def manageLine(m3lines, n):
             "titleFile": os.path.basename(lineLink),
             "link": lineLink
         }
-        return test
+        return m3dict
 
 
 ###
 
 #
 ###
-if (selfAddon.getSetting('USERNAME') == '') & (selfAddon.getSetting('PASSWORD') == ''):
-    xbmcgui.Dialog().ok('You Must Enter Valid Username and Password to view the channels')
+while (selfAddon.getSetting('USERNAME') == '') or (selfAddon.getSetting('PASSWORD') == ''):
+    xbmcgui.Dialog().ok('World Wide HD Service', 'Account Details Missing: ',
+                        'You Must Enter Valid Username and Password to view the Channels')
     show_settings()
 
-else:
-    update_m3u()
-    with open(profile_path + '/runtime', 'w') as fout:
-        fout.write(str(time.time()))
+update_m3u()
+with open(profile_path + '/runtime', 'w') as fout:
+    fout.write(str(time.time()))
