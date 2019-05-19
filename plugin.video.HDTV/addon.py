@@ -123,9 +123,7 @@ def add_channels(group_name):
     return
 
 
-def play_url(url):
-    import urlresolver
-    media_url = urlresolver.resolve(url)
+def play_url(media_url):
     playlist = xbmc.PlayList(1)
     playlist.clear()
     listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png")
