@@ -1,10 +1,10 @@
 import json
 import os
-import re
 import sys
 import time
 import traceback
 import urllib
+import urllib2
 import urlparse
 import xbmc
 import xbmcaddon
@@ -70,6 +70,11 @@ def get_params():
 
     return param
 
+def get_redirected_url(url):
+    opener = urllib2.build_opener(urllib2.HTTPRedirectHandler)
+    request = opener.open(url)
+    return request.url
+
 def EXIT():
         xbmc.executebuiltin("XBMC.Container.Update(path,replace)")
         xbmc.executebuiltin("XBMC.ActivateWindow(Home)")
@@ -123,7 +128,8 @@ def add_channels(group_name):
     return
 
 
-def play_url(media_url):
+def play_url(url):
+    media_url = get_redirected_url(url)
     playlist = xbmc.PlayList(1)
     playlist.clear()
     listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png")
