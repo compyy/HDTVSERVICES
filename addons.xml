@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.HDTV" name="HDTV" version="1.2B" provider-name="Compyy">
+<addon id="plugin.video.HDTV" name="HDTV" version="1.3B" provider-name="Compyy">
     <requires>
-        <import addon="xbmc.python" />
+        <import addon="xbmc.python" version="2.7.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="addon.py">
         <provides>video</provides>
