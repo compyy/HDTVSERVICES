@@ -24,7 +24,7 @@ profile_path = xbmc.translatePath(selfAddon.getAddonInfo('profile')).decode("utf
 addonPath = xbmcaddon.Addon().getAddonInfo('path')
 addonversion = xbmcaddon.Addon().getAddonInfo('version')
 sys.path.append(os.path.join(addonPath, 'resources', 'lib'))
-service_addon = addonPath + '/service.py'
+service_addon = addonPath + '/HDservice.py'
 cacheDir = os.path.join(profile_path, "cache")
 if not os.path.exists(cacheDir):
     os.makedirs(cacheDir)

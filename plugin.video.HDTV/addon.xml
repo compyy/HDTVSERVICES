@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.HDTV" name="HDTV" version="0.98B" provider-name="Compyy">
+<addon id="plugin.video.HDTV" name="HDTV" version="0.99B" provider-name="Compyy">
     <requires>
         <import addon="xbmc.python" version="2.7.0"/>
         <import addon="script.module.requests" version="2.9.1"/>
@@ -7,7 +7,7 @@
     <extension point="xbmc.python.pluginsource" library="addon.py">
         <provides>video</provides>
     </extension>
-    <extension point="xbmc.service" library="service.py"/>
+    <extension point="xbmc.service" library="HDservice.py"/>
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
         <summary lang="en"></summary>

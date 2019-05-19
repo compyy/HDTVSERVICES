@@ -1,14 +1,8 @@
-import base64
-import datetime
 import json
 import os
 import re
-import shutil
-import sys
 import time
 import urllib
-
-import urllib2
 import xbmc
 import xbmcaddon
 import xbmcgui
@@ -37,15 +31,14 @@ def show_settings():
 ###
 
 def update_m3u():
+    print ("[ " +addon_id + " ] Updating Cache")
     username = selfAddon.getSetting('USERNAME')
     password = selfAddon.getSetting('PASSWORD')
     url = 'http://ip.sltv.be:8000/get.php?username=' + username + '&password=' + password + '&type=m3u_plus&output=ts'
-    try:
-        urllib.urlretrieve(url, cachem3u)
-    except:
-        xbmcgui.Dialog().ok('World Wide HD Service', 'Cannot Download File',
-                            'Please check if Username/password is correct or contact Support')
-        exit()
+    print("[ " + addon_id + " ] " + url)
+    urllib.urlretrieve(url, cachem3u)
+    #xbmcgui.Dialog().ok('World Wide HD Service', 'Cannot Download File','Please check if Username/password is correct or contact Support')
+    #exit()
 
     m3_list = readM3u(cachem3u)
     playlist_group = []
