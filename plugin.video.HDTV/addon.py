@@ -70,14 +70,17 @@ def get_params():
 
     return param
 
+
 def get_redirected_url(url):
     opener = urllib2.build_opener(urllib2.HTTPRedirectHandler)
     request = opener.open(url)
     return request.url
 
-def EXIT():
-        xbmc.executebuiltin("XBMC.Container.Update(path,replace)")
-        xbmc.executebuiltin("XBMC.ActivateWindow(Home)")
+
+def addon_exit():
+    xbmc.executebuiltin("XBMC.Container.Update(path,replace)")
+    xbmc.executebuiltin("XBMC.ActivateWindow(Home)")
+
 
 # Define Addon specific Functions
 def add_directory(name, url, mode, iconimage, isItFolder=True):
@@ -91,16 +94,17 @@ def add_directory(name, url, mode, iconimage, isItFolder=True):
 
 def add_types():
     add_directory('Refresh Database', 'Refresh_Database', 2, '')
-
     try:
         with open(cacheDir + '/groups.txt') as data_file:
             group_list = data_file.readlines()
 
     except:
         xbmcgui.Dialog().ok('World Wide HD Service', 'Loading Cache..... ',
-                           'Please Wait Untill Cache is updated.')
-        EXIT()
+                            'Please Wait Untill Cache is updated, if you see this error for long time, Click on Refresh Database')
+        addon_exit()
 
+    if group_list:
+        add_directory('ICC Cricket Worldcup 2019 Special', 'Cricket', 2, '')
     for i in group_list:
         if i:
             i = i.strip()
@@ -111,8 +115,11 @@ def add_types():
 
 
 def add_channels(group_name):
+    if group_name == 'ICC Cricket Worldcup 2019 Special':
+        cricket_channels = 'Cricket'
     if group_name == 'Refresh Database':
         xbmc.executebuiltin('XBMC.RunScript(' + service_addon + ')')
+        addon_exit()
     else:
         with open(cacheDir + '/channels.json') as data_file:
             playlist_tracks = json.loads(data_file.read())
@@ -120,6 +127,11 @@ def add_channels(group_name):
         for i in range(0, len(playlist_tracks)):
             if playlist_tracks[i]:
                 if playlist_tracks[i]['tvg-group'].encode("utf-8") == group_name:
+                    ch_name = playlist_tracks[i]['tvg-name'].encode("utf-8")
+                    ch_url = playlist_tracks[i]['link'].encode("utf-8")
+                    ch_icon = playlist_tracks[i]['tvg-logo'].encode("utf-8")
+                    add_directory(ch_name, ch_url, 3, ch_icon, isItFolder=False)
+                if cricket_channels in playlist_tracks[i]['tvg-name'].encode("utf-8") or 'PTV Sports' in playlist_tracks[i]['tvg-name'].encode("utf-8"):
                     ch_name = playlist_tracks[i]['tvg-name'].encode("utf-8")
                     ch_url = playlist_tracks[i]['link'].encode("utf-8")
                     ch_icon = playlist_tracks[i]['tvg-logo'].encode("utf-8")

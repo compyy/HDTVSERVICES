@@ -29,17 +29,37 @@ def show_settings():
 
 
 ###
+class MyURLopener(urllib.FancyURLopener):
+    http_error_default = urllib.URLopener.http_error_default
+
+
+def reporthook(blockcount, blocksize, totalsize):
+    pass
+
+
+###
 
 def update_m3u():
-    print ("[ " +addon_id + " ] Updating Cache")
+    print("[ " + addon_id + " ] Updating Cache")
     username = selfAddon.getSetting('USERNAME')
     password = selfAddon.getSetting('PASSWORD')
     url = 'http://ip.sltv.be:8000/get.php?username=' + username + '&password=' + password + '&type=m3u_plus&output=ts'
-    print("[ " + addon_id + " ] " + url)
-    urllib.urlretrieve(url, cachem3u)
-    #xbmcgui.Dialog().ok('World Wide HD Service', 'Cannot Download File','Please check if Username/password is correct or contact Support')
-    #exit()
+    try:
+        (f, headers) = MyURLopener().retrieve(url, cachem3u, reporthook)
+    except Exception as e:
+        if e.errno == 'socket error':
+            xbmcgui.Dialog().ok('World Wide HD Service', 'Cannot Update Cache',
+                                'Unable to reach Server Try Again after 30 minutes or contact Support')
+            exit()
 
+        if e.args[1] == 404:
+            xbmcgui.Dialog().ok('World Wide HD Service', 'Cannot Update Cache',
+                                'Please check if Username/password is correct or contact Support')
+            exit()
+
+        xbmcgui.Dialog().ok('World Wide HD Service', 'Cannot Update Cache',
+                            'Please contact Support')
+        exit()
     m3_list = readM3u(cachem3u)
     playlist_group = []
 
@@ -59,6 +79,8 @@ def update_m3u():
 
     with open(cacheDir + '/channels.json', 'w') as fout:
         json.dump(m3_list, fout)
+        with open(profile_path + '/runtime', 'w') as fout:
+            fout.write(str(time.time()))
 
     return
 
@@ -117,11 +139,16 @@ def manageLine(m3lines, n):
 
 #
 ###
-while (selfAddon.getSetting('USERNAME') == '') or (selfAddon.getSetting('PASSWORD') == ''):
+if (selfAddon.getSetting('USERNAME') == '') or (selfAddon.getSetting('PASSWORD') == ''):
     xbmcgui.Dialog().ok('World Wide HD Service', 'Account Details Missing: ',
                         'You Must Enter Valid Username and Password to view the Channels')
+
+    with open(profile_path + '/runtime', 'w') as fout:
+        fout.write(str(time.time() - 1800))
+
     show_settings()
 
-update_m3u()
-with open(profile_path + '/runtime', 'w') as fout:
-    fout.write(str(time.time()))
+with open(profile_path + '/runtime', 'r') as fout:
+    script_time = float(fout.readline())
+    if time.time() > (script_time + 1800):
+        update_m3u()
