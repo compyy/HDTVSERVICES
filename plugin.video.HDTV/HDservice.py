@@ -29,23 +29,11 @@ def show_settings():
 
 
 ###
-class MyURLopener(urllib.FancyURLopener):
-    http_error_default = urllib.URLopener.http_error_default
-
-
-def reporthook(blockcount, blocksize, totalsize):
-    pass
-
-
-###
-
-def update_m3u():
-    print("[ " + addon_id + " ] Updating Cache")
-    username = selfAddon.getSetting('USERNAME')
-    password = selfAddon.getSetting('PASSWORD')
-    url = 'http://ip.sltv.be:8000/get.php?username=' + username + '&password=' + password + '&type=m3u_plus&output=ts'
+def DownloaderClass(url, cachem3u):
+    dp = xbmcgui.DialogProgress()
+    dp.create("HDTV Cache", "Updating Cache File..!", url)
     try:
-        (f, headers) = MyURLopener().retrieve(url, cachem3u, reporthook)
+        (f, headers) = MyURLopener().retrieve(url, cachem3u, lambda nb, bs, fs, url=url: _pbhook(nb, bs, fs, url, dp))
     except Exception as e:
         if e.errno == 'socket error':
             xbmcgui.Dialog().ok('World Wide HD Service', 'Cannot Update Cache',
@@ -60,6 +48,36 @@ def update_m3u():
         xbmcgui.Dialog().ok('World Wide HD Service', 'Cannot Update Cache',
                             'Please contact Support')
         exit()
+
+
+###
+class MyURLopener(urllib.FancyURLopener):
+    http_error_default = urllib.URLopener.http_error_default
+
+
+def _pbhook(numblocks, blocksize, filesize, url=None, dp=None):
+    try:
+        percent = min((numblocks * blocksize * 100) / filesize, 100)
+        print(percent)
+        dp.update(percent)
+    except:
+        percent = 100
+        print(percent)
+        dp.update(percent)
+
+    if dp.iscanceled():
+        print('DOWNLOAD CANCELLED')
+        dp.close()
+
+
+###
+
+def update_m3u():
+    print("[ " + addon_id + " ] Updating Cache")
+    username = selfAddon.getSetting('USERNAME')
+    password = selfAddon.getSetting('PASSWORD')
+    url = 'http://ip.sltv.be:8000/get.php?username=' + username + '&password=' + password + '&type=m3u_plus&output=ts'
+    DownloaderClass(url, cachem3u)
     m3_list = readM3u(cachem3u)
     playlist_group = []
 

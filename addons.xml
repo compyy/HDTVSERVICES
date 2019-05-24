@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.HDTV" name="HDTV" version="1.5B" provider-name="Compyy">
+<addon id="plugin.video.HDTV" name="HDTV" version="1.6B" provider-name="Compyy">
     <requires>
         <import addon="xbmc.python" version="2.7.0"/>
     </requires>
