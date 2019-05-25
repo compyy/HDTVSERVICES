@@ -115,8 +115,6 @@ def add_types():
 
 
 def add_channels(group_name):
-    if group_name == 'ICC Cricket Worldcup 2019 Special':
-        cricket_channels = 'Cricket'
     if group_name == 'Refresh Database':
         xbmc.executebuiltin('XBMC.RunScript(' + service_addon + ')')
         addon_exit()
@@ -126,12 +124,16 @@ def add_channels(group_name):
 
         for i in range(0, len(playlist_tracks)):
             if playlist_tracks[i]:
-                if playlist_tracks[i]['tvg-group'].encode("utf-8") == group_name:
-                    ch_name = playlist_tracks[i]['tvg-name'].encode("utf-8")
-                    ch_url = playlist_tracks[i]['link'].encode("utf-8")
-                    ch_icon = playlist_tracks[i]['tvg-logo'].encode("utf-8")
-                    add_directory(ch_name, ch_url, 3, ch_icon, isItFolder=False)
-                if cricket_channels in playlist_tracks[i]['tvg-name'].encode("utf-8") or 'PTV Sports' in playlist_tracks[i]['tvg-name'].encode("utf-8"):
+                if group_name == 'ICC Cricket Worldcup 2019 Special':
+                    cricket_channels = ['Cricket', 'PTV Sports', 'Fox Sports', 'Super Sport', 'Star Sports']
+                    for j in cricket_channels:
+                        if j in playlist_tracks[i]['tvg-name'].encode("utf-8"):
+                            ch_name = playlist_tracks[i]['tvg-name'].encode("utf-8")
+                            ch_url = playlist_tracks[i]['link'].encode("utf-8")
+                            ch_icon = playlist_tracks[i]['tvg-logo'].encode("utf-8")
+                            add_directory(ch_name, ch_url, 3, ch_icon, isItFolder=False)
+
+                elif group_name == playlist_tracks[i]['tvg-group'].encode("utf-8"):
                     ch_name = playlist_tracks[i]['tvg-name'].encode("utf-8")
                     ch_url = playlist_tracks[i]['link'].encode("utf-8")
                     ch_icon = playlist_tracks[i]['tvg-logo'].encode("utf-8")
@@ -175,11 +177,9 @@ try:
 except:
     pass
 
-print
-params
+print(params)
 args = urlparse.parse_qs(sys.argv[2][1:])
-print
-name, url, mode
+print(name, url, mode)
 
 with open(profile_path + '/runtime', 'r') as fout:
     script_time = float(fout.readline())
