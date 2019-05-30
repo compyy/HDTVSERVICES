@@ -183,7 +183,7 @@ print(name, url, mode)
 
 with open(profile_path + '/runtime', 'r') as fout:
     script_time = float(fout.readline())
-    if time.time() > (script_time + 1800):
+    if time.time() > (script_time + 259200):
         xbmc.executebuiltin('XBMC.RunScript(' + service_addon + ')')
 
 # noinspection PyBroadException

@@ -162,11 +162,11 @@ if (selfAddon.getSetting('USERNAME') == '') or (selfAddon.getSetting('PASSWORD')
                         'You Must Enter Valid Username and Password to view the Channels')
 
     with open(profile_path + '/runtime', 'w') as fout:
-        fout.write(str(time.time() - 1800))
+        fout.write(str(time.time() - 259200))
 
     show_settings()
 
 with open(profile_path + '/runtime', 'r') as fout:
     script_time = float(fout.readline())
-    if time.time() > (script_time + 1800):
+    if time.time() > (script_time + 259200):
         update_m3u()
